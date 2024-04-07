@@ -1,0 +1,89 @@
+@charset "utf-8";
+
+:root {
+  --main-color: #4169E1;
+  --comp-color: #E1B941;
+}
+
+body {
+  margin: 0;
+}
+
+.chatBox {
+  display: flex;
+  flex-direction: column;
+  margin: 16px auto 0;
+  padding: 0;
+  max-width: 800px;
+  height: 600px;
+  border: 1px solid black;
+  box-sizing: border-box;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+p {
+  margin: 0;
+}
+
+a {
+  color: white;
+}
+
+.chatHead {
+  border-bottom: 1px solid black;
+  padding: 8px;
+  color: white;
+  background-color: var(--main-color);
+  display: flex;
+}
+
+.chatHead a {
+  margin-left: auto;
+}
+
+ul {
+  margin: 0;
+  padding: 16px 32px;
+  flex: 1;
+  overflow-y: scroll;
+  border-bottom: 1px solid black;
+}
+
+li {
+  list-style: none;
+  white-space:pre-wrap; /* 入力内容の改行を有効にする */
+  max-width: 80%;
+  width: fit-content;
+  margin-top: 8px;
+  padding: 16px;
+  border-radius: 4px;
+  display: flex;
+  box-shadow: 4px 4px 2px rgba(0, 0, 0, 0.2);
+  color: white;
+}
+
+.userBubble {
+  background-color: var(--comp-color);
+  margin-left: auto;
+}
+
+.chatBubble {
+  text-align: left;
+  background: var(--main-color);
+}
+
+.userInputArea {
+  margin-top: auto;
+  padding: 8px;
+}
+
+.userInputArea textarea {
+  margin: 0;
+  padding: 0;
+  resize: none;
+  vertical-align: bottom;
+  width: calc(100% - 34px * 2);
+  line-height: 1.5;
+  height: calc(1.5 * 3em);
+}
