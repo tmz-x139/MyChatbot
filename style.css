@@ -5,18 +5,24 @@
   --comp-color: #E1B941;
 }
 
+html {
+  height: 100%;
+}
+
 body {
   margin: 0;
+  padding: 16px;
   height: 100%;
+  box-sizing: border-box;
 }
 
 .chatBox {
   display: flex;
   flex-direction: column;
-  margin: 16px auto 0;
+  margin: 0 auto;
   padding: 0;
   max-width: 800px;
-  height: 600px;
+  height: 100%;
   border: 1px solid black;
   box-sizing: border-box;
   border-radius: 4px;
@@ -90,5 +96,5 @@ li div {
   vertical-align: bottom;
   width: calc(100% - 34px * 2);
   line-height: 1.5;
-  height: calc(1.5 * 3em);
+  height: calc(1.5 * 5em);
 }
