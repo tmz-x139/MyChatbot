@@ -2,20 +2,42 @@
 
 {
   // 会話のシナリオ これに対するユーザーの返答は配列に格納される
-  const promptPlanner = [
-    'ChatGPTに使えるプロンプトの作成をお手伝いします。\n質問に1つずつ答えてください。\n(JavaScriptを使って利用者側で処理をしているので、\n開発者から入力内容は見えません。ご安心ください。)\n\n=======================\n#役割\nChatGPTに担ってほしい役割を教えてください。\n\n【例】\nあなたはプロの広告ライターです。\n\n',
-    '#インプット\nChatGPTがこれからあなたに与えられるタスクに取り組むにあたって、知っておくべき前提情報を教えてください。\n\n【例】\n・売りたい商品\n思考整理チャットボットくん\n\n・商品の特徴\n思考整理のためのフレームワークに従って、ユーザーに質問をするチャットボットです。\n対話形式で1つずつ質問がされるので、ユーザーは全体の整合性にこだわり過ぎずに、フレームワークに従って思考をアウトプットすることに集中できます。\n\n・制約\n商品紹介文は、フォーマルな文体で書いてください。\n商品紹介文は300文字以内にしてください。\n\n',
-    '#命令\nChatGPTにやってほしいタスクを教えてください。\n\n【例】\n(#インプット)の情報と制約に従って、商品紹介文を書いてください。\n\n',
-    '#アウトプット\nChatGPTに出力してほしい回答の形式を教えてください。\n\n【例】\nプレーンテキストで出力してください。\n',
-  ];
+  const scenarios = {
+    1 : {
+      name : 'ChatGPTプロンプト作成フレームワーク',
+      scenario : [
+        'ChatGPTに使えるプロンプトの作成をお手伝いします。\n質問に1つずつ答えてください。\n(JavaScriptを使って利用者側で処理をしているので、\n開発者から入力内容は見えません。ご安心ください。)\n\n=======================\n#役割\nChatGPTに担ってほしい役割を教えてください。\n\n【例】\nあなたはプロの広告ライターです。\n\n',
+        '#インプット\nChatGPTがこれからあなたに与えられるタスクに取り組むにあたって、知っておくべき前提情報を教えてください。\n\n【例】\n・売りたい商品\n思考整理チャットボットくん\n\n・商品の特徴\n思考整理のためのフレームワークに従って、ユーザーに質問をするチャットボットです。\n対話形式で1つずつ質問がされるので、ユーザーは全体の整合性にこだわり過ぎずに、フレームワークに従って思考をアウトプットすることに集中できます。\n\n・制約\n商品紹介文は、フォーマルな文体で書いてください。\n商品紹介文は300文字以内にしてください。\n\n',
+        '#命令\nChatGPTにやってほしいタスクを教えてください。\n\n【例】\n(#インプット)の情報と制約に従って、商品紹介文を書いてください。\n\n',
+        '#アウトプット\nChatGPTに出力してほしい回答の形式を教えてください。\n\n【例】\nプレーンテキストで出力してください。\n',
+      ],
+      output : [
+        'お疲れ様でした。以下があなたのプロンプトです。\nコピペしてChatGPTの指示にお使いください。\n\n=======================\n#役割\n',
+        '\n#インプット\n',
+        '\n#命令\n',
+        '\n#アウトプット\n',
+      ]
+    },
+    2 : {
+      name : 'KPT振り返りフレームワーク',
+      scenario : [
+        '仕事やプロジェクトが完了、KPT(=Keep, Problem, Try)フレームワークに基づいて、振り返りをしましょう。\n今回完了した仕事やプロジェクトに関して、質問に1つずつ答えてください。\n\n=======================\n#Keep\nよかったこと、次回も継続してやりたいことを教えてください。',
+        '#Problem\nよくなかったこと、次回は改善すべきことを教えてください。',
+        '#Try\n次回に挑戦すること、具体的な改善策を教えてください。'
+      ],
+      output : [
+        'お疲れ様でした。\n以下がKPTフレームワークに基づいて書き出された振り返りです。\n\n=======================\n#Keep\n',
+        '\n#Problem\n',
+        '\n#Try\n'
+      ],
+    }
+  };
 
-  // 会話終了後にユーザーの返答を整形して表示するためのシナリオ
-  const promptOutput = [
-    'お疲れ様でした。以下があなたのプロンプトです。\nコピペしてChatGPTの指示にお使いください。\n\n=======================\n#役割\n',
-    '\n#インプット\n',
-    '\n#命令\n',
-    '\n#アウトプット\n',
-  ]    
+  // シナリオ選び用スクリプト
+  const introScenario = [
+    'あなたの思考整理を手伝うチャットボットです。\n取り組みたいフレームワークを選んで、番号を教えてください。\n(JavaScriptを用いて利用者側で処理を行っているため、入力内容は開発者からは見えません。ご安心ください。)\n\n'
+  ];
+  const introScenarioError = '正しい番号が入力されませんでした。';
 
   const form = document.querySelector('form'); //form selector
   const chatArea = document.querySelector('ul'); //ul selector
@@ -58,7 +80,7 @@
 
     chatLi.scrollIntoView({ behavior: 'smooth' });//追加したli要素が見えるところまでスクロール
   }
-
+  
   // 会話シナリオ(botScript)の要素を1つ表示した後、以降はユーザーからの入力があるごとに要素を表示
   // ユーザーからの返答はresultに格納　最後にユーザーの返答を整形して表示するためのシナリオ(botOutput)を使ってユーザーの入力内容を整形して表示
   async function scenario(botScript, botOutput, result) {
@@ -81,9 +103,50 @@
     }, 1000);  
   }
 
-  // result用の空配列作成と関数の実行
-  const userInputs = [];
-  scenario(promptPlanner, promptOutput, userInputs);
+  // シナリオを選ばせて実行する関数
+  async function chooseScenario(scenarioDict, botScript) {
+    // シナリオのリストを作成
+    let showScenario = '';
+    Object.keys(scenarioDict).forEach ((key) => {
+      showScenario += `${key} : ${scenarios[key]['name']}\n`;
+    });
+    // シナリオリストを表示
+    setTimeout(function() {
+      let introBubble = '';
+      for (let i = 0; i < botScript.length; i++) {
+        introBubble = botScript[i];
+      }
+      renderChat(introBubble + showScenario, 'chatBubble');
+    }, 1000);
+    // ユーザー入力の取得
+    const userInput = await getUserInput();
+    renderChat(userInput, 'userBubble');
+    form.querySelector('.textBox').value = '';
+    // ユーザー入力のチェック
+    let userInputValid = 0;
+    Object.keys(scenarioDict).forEach ((key) => {
+      if (userInput === key) {
+        userInputValid++;
+      }
+    });
+    // シナリオの実行
+    if (userInputValid !== 0) {
+      const result = [];
+      await scenario(scenarioDict[userInput]['scenario'], scenarioDict[userInput]['output'], result);
+      setTimeout(function() { // シナリオの実行後、シナリオ選択に戻る
+        chooseScenario(scenarioDict, botScript);
+      }, 2000);
+    } else {
+      setTimeout(function() {
+        renderChat(introScenarioError, 'chatBubble'); //不正な入力があった場合はシナリオ選択に戻る
+        chooseScenario(scenarioDict, botScript);
+      }, 1000);
+    }
+    
+  }
+
+  // 関数の実行
+  chooseScenario(scenarios, introScenario);
 
 }
 
